@@ -12,7 +12,6 @@ export const getItems = () => (dispatch) => {
 };
 
 export const addItem = (item) => (dispatch) => {
-  console.log(item);
   axios.post("http://localhost:5000/api/items", item).then((res) =>
     dispatch({
       type: ADD_ITEM,

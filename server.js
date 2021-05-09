@@ -1,14 +1,15 @@
 import express from "express";
 import mongoose from "mongoose";
-import { db } from "./config/keys.js";
 import items from "./routes/api/items.js";
+import users from "./routes/api/users.js";
+import auth from "./routes/api/auth.js";
 import cors from "cors";
-import bodyParser from "body-parser";
 import path from "path";
+import config from "config";
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
 // serve static assets if in production
 if (process.env.NODE_ENV === "production") {
@@ -21,8 +22,13 @@ if (process.env.NODE_ENV === "production") {
 }
 
 const port = process.env.port || 5000;
+const db = config.get("mongoURL");
 mongoose
-  .connect(db.mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(db, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  })
   .then(() => {
     app.listen(port, () => {
       console.log(`server listen to port ${port}`);
@@ -33,3 +39,5 @@ mongoose
   });
 
 app.use("/api/items", items);
+app.use("/api/users", users);
+app.use("/api/auth", auth);
